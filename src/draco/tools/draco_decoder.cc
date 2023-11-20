@@ -154,6 +154,7 @@ int main(int argc, char **argv) {
         return -1;
       }
     } else {
+      printf("[YC] Before save to file\n"); // [YC] add: print to check
       if (!ply_encoder.EncodeToFile(*pc, options.output)) {
         printf("Failed to store the decoded point cloud as PLY.\n");
         return -1;

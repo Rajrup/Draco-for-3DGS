@@ -37,6 +37,7 @@ bool PlyEncoder::EncodeToFile(const PointCloud &pc,
   if (!EncodeToBuffer(pc, &buffer)) {
     return false;
   }
+  //! [YC] note: important
   // Write the buffer into the file.
   file->Write(buffer.data(), buffer.size());
   return true;
@@ -130,11 +131,11 @@ bool PlyEncoder::EncodeInternal() {
   }
   // [YC] start: add properties to header
   if (new_att_id >= 0) {
-    out << "property " << GetAttributeDataType(normal_att_id) << " my_nx"
+    out << "property " << GetAttributeDataType(new_att_id) << " my_nx"
         << std::endl;
-    out << "property " << GetAttributeDataType(normal_att_id) << " my_ny"
+    out << "property " << GetAttributeDataType(new_att_id) << " my_ny"
         << std::endl;
-    out << "property " << GetAttributeDataType(normal_att_id) << " my_nz"
+    out << "property " << GetAttributeDataType(new_att_id) << " my_nz"
         << std::endl;
   }
   // [YC] end
@@ -153,27 +154,33 @@ bool PlyEncoder::EncodeInternal() {
   // Not very efficient but the header should be small so just copy the stream
   // to a string.
   const std::string header_str = out.str();
+  printf("[YC] Encode header\n"); // [YC] add: print to check
   buffer()->Encode(header_str.data(), header_str.length());
 
   // Store point attributes.
   const int num_points = in_point_cloud_->num_points();
   printf("[YC] num_points: %d\n", num_points); // [YC] add: check print
   for (PointIndex v(0); v < num_points; ++v) {
+    printf("[YC] pos_att\n"); // [YC] add: check print
     const auto *const pos_att = in_point_cloud_->attribute(pos_att_id);
     buffer()->Encode(pos_att->GetAddress(pos_att->mapped_index(v)),
                      pos_att->byte_stride());
+    
     if (normal_att_id >= 0) {
+      printf("[YC] normal_att_id\n"); // [YC] add: check print
       const auto *const normal_att = in_point_cloud_->attribute(normal_att_id);
       buffer()->Encode(normal_att->GetAddress(normal_att->mapped_index(v)),
                        normal_att->byte_stride());
     }
     if (color_att_id >= 0) {
+      printf("[YC] color_att_id\n"); // [YC] add: check print
       const auto *const color_att = in_point_cloud_->attribute(color_att_id);
       buffer()->Encode(color_att->GetAddress(color_att->mapped_index(v)),
                        color_att->byte_stride());
     }
     // [YC] start: write the vertex value to buffer
     if (new_att_id >= 0) {
+      printf("[YC] new_att_id\n"); // [YC] add: check print
       const auto *const new_att = in_point_cloud_->attribute(new_att_id);
       buffer()->Encode(new_att->GetAddress(new_att->mapped_index(v)),
                        new_att->byte_stride());

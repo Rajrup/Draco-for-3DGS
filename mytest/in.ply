@@ -1,7 +1,7 @@
 ply
 format ascii 1.0
 comment VCGLIB generated
-element vertex 4
+element vertex 1
 property float x
 property float y
 property float z
@@ -15,7 +15,4 @@ property float my_nx
 property float my_ny
 property float my_nz
 end_header
-0 0 0 -1 0 0 0 0 0 1 1 1
-0 0 1 0 0 1 0 0 0 1 1 1
-0 1 0 0 1 0 0 0 0 1 1 1
-0 1 1 0 1 0 0 0 0 1 1 1
+0 1 2 10 11 12 20 21 22 30 31 32
