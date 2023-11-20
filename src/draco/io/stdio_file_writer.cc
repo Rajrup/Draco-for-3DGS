@@ -63,7 +63,7 @@ void printCharArray(const char *buffer) {
 // [YC] end
 
 bool StdioFileWriter::Write(const char *buffer, size_t size) {
-  printCharArray(buffer); // [YC] add: print for check
+  // printCharArray(buffer); // [YC] add: print for check
   return fwrite(buffer, 1, size, file_) == size;
 }
 

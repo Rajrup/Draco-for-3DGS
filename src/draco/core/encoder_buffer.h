@@ -62,7 +62,7 @@ class EncoderBuffer {
       return false;
     }
     const uint8_t *src_data = reinterpret_cast<const uint8_t *>(&data);
-    printf("[YC] *src_data (const T &data): %hhu\n", *src_data); // [YC] add: print to save
+    // printf("[YC] *src_data (const T &data)\n"); // [YC] add: print to save
     buffer_.insert(buffer_.end(), src_data, src_data + sizeof(T));
     return true;
   }
@@ -76,9 +76,8 @@ class EncoderBuffer {
     // Assuming data is an array of floats
     const float *float_data = reinterpret_cast<const float *>(data);
     for (size_t i = 0; i < data_size / sizeof(float); ++i) {
-        printf("[YC] Float value %zu: %f\n", i, float_data[i]);
-}
-    // printf("[YC] *src_data (const void *data, size_t data_size): %hhu\n", data); // [YC] add: print to save
+        printf("[YC] Float value %zu: %.40f\n", i, float_data[i]);
+    }
     // [YC] end
 
     buffer_.insert(buffer_.end(), src_data, src_data + data_size);

@@ -129,6 +129,7 @@ bool PlyEncoder::EncodeInternal() {
           << std::endl;
     }
   }
+  
   // [YC] start: add properties to header
   if (new_att_id >= 0) {
     out << "property " << GetAttributeDataType(new_att_id) << " my_nx"
@@ -139,6 +140,7 @@ bool PlyEncoder::EncodeInternal() {
         << std::endl;
   }
   // [YC] end
+
   if (in_mesh_) {
     out << "element face " << in_mesh_->num_faces() << std::endl;
     out << "property list uchar int vertex_indices" << std::endl;
