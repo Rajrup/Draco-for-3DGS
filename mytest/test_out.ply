@@ -1,8 +1,0 @@
-ply
-format binary_little_endian 1.0
-element vertex 3
-property float x
-property float y
-property float z
-end_header
-fÎœ@–9@Î<s@šg–@–9@ffö@33ƒ@ff&@33³?
