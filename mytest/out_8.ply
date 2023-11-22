@@ -1,15 +1,0 @@
-ply
-format binary_little_endian 1.0
-element vertex 9
-property float x
-property float y
-property float z
-property float nx
-property float ny
-property float nz
-property float my_nx
-property float my_ny
-property float my_nz
-end_header
-”V?!ù7@Ëí)A{97A]ŸHAyÕ¥Av¯A—ÿ¶AŒ-»AT{I?¢%?@uê&At$5AI|JA§A–§«A¯ˆ´A[ÃºAƒe?”é)@ºÏ/AÖ>A&=LA-;¥A~V¬AÕu³Ab‘ºA(&¢?½"@¶/Aä >A$@A§AÝC­AVi³A:¸AZ-f?D@4^,A\5ALA]–£A,=©APcµA`:¾A_ Ÿ>Ž¸?@U%A³·;AV˜JAç§¢AÓ©AvP´A~‘»AÖ^>ã0@â/Aý'0AI|JA
-ü¦A~V¬AÔ­±A‚@½AÈ›Ý>½"@†%Au:AWŸLAÖ‹¤A—o­AÓ·A{ª»AêÖü=Ò@IF'Af9AyÞJA´L¦A›¯A·æ·AC:½A
