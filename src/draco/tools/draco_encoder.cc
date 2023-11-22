@@ -357,7 +357,14 @@ int main(int argc, char **argv) {
     encoder.SetAttributeQuantization(draco::GeometryAttribute::GENERIC,
                                      options.generic_quantization_bits);
   }
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::NEW_ATTRIBUTE, options.normals_quantization_bits); // [YC] add
+  //! [YC] start: set quantization bits to new attribute
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_DC, options.normals_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST, options.normals_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::OPACITY, options.normals_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::SCALE, options.normals_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::ROT, options.normals_quantization_bits); // for now folow qn
+  //! [YC] end
+
   encoder.SetSpeedOptions(speed, speed);
 
   if (options.output.empty()) {

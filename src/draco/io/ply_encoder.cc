@@ -78,8 +78,13 @@ bool PlyEncoder::EncodeInternal() {
       in_point_cloud_->GetNamedAttributeId(GeometryAttribute::TEX_COORD);
   const int color_att_id =
       in_point_cloud_->GetNamedAttributeId(GeometryAttribute::COLOR);
-  const int new_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::NEW_ATTRIBUTE); // [YC] add
-
+  //! [YC] start
+  const int f_dc_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_DC); 
+  const int f_rest_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST); 
+  const int opacity_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::OPACITY); 
+  const int scale_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::SCALE); 
+  const int rot_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::ROT); 
+  //! [YC] end
 
   if (pos_att_id < 0) {
     return false;
@@ -130,16 +135,44 @@ bool PlyEncoder::EncodeInternal() {
     }
   }
   
-  // [YC] start: add properties to header
-  if (new_att_id >= 0) {
-    out << "property " << GetAttributeDataType(new_att_id) << " my_nx"
+  //! [YC] start: add properties to header. Here have order issue
+  if (f_dc_att_id >= 0) {
+    out << "property " << GetAttributeDataType(f_dc_att_id) << " f_dc_0"
         << std::endl;
-    out << "property " << GetAttributeDataType(new_att_id) << " my_ny"
+    out << "property " << GetAttributeDataType(f_dc_att_id) << " f_dc_1"
         << std::endl;
-    out << "property " << GetAttributeDataType(new_att_id) << " my_nz"
+    out << "property " << GetAttributeDataType(f_dc_att_id) << " f_dc_2"
         << std::endl;
   }
-  // [YC] end
+  if (f_rest_att_id >= 0) {
+    for(int i = 0; i < 45; i++){
+      out << "property " << GetAttributeDataType(f_dc_att_id) << " f_rest_" << i
+          << std::endl;
+    }
+  }
+  if (opacity_att_id >= 0) {
+    out << "property " << GetAttributeDataType(opacity_att_id) << " opacity"
+        << std::endl;
+  }
+  if (scale_att_id >= 0) {
+    out << "property " << GetAttributeDataType(scale_att_id) << " scale_0"
+        << std::endl;
+    out << "property " << GetAttributeDataType(scale_att_id) << " scale_1"
+        << std::endl;
+    out << "property " << GetAttributeDataType(scale_att_id) << " scale_2"
+        << std::endl;
+  }
+  if (rot_att_id >= 0) {
+    out << "property " << GetAttributeDataType(rot_att_id) << " rot_0"
+        << std::endl;
+    out << "property " << GetAttributeDataType(rot_att_id) << " rot_1"
+        << std::endl;
+    out << "property " << GetAttributeDataType(rot_att_id) << " rot_2"
+        << std::endl;
+    out << "property " << GetAttributeDataType(rot_att_id) << " rot_3"
+        << std::endl;
+  }
+  //! [YC] end
 
   if (in_mesh_) {
     out << "element face " << in_mesh_->num_faces() << std::endl;
@@ -163,31 +196,58 @@ bool PlyEncoder::EncodeInternal() {
   const int num_points = in_point_cloud_->num_points();
   printf("[YC] num_points: %d\n", num_points); // [YC] add: check print
   for (PointIndex v(0); v < num_points; ++v) {
-    printf("[YC] pos_att\n"); // [YC] add: check print
+    printf("[YC] point: %d\n", v); // [YC] add: check print
+    // printf("[YC] pos_att\n"); // [YC] add: check print
     const auto *const pos_att = in_point_cloud_->attribute(pos_att_id);
     buffer()->Encode(pos_att->GetAddress(pos_att->mapped_index(v)),
                      pos_att->byte_stride());
     
     if (normal_att_id >= 0) {
-      printf("[YC] normal_att_id\n"); // [YC] add: check print
+      // printf("[YC] normal_att_id\n"); // [YC] add: check print
       const auto *const normal_att = in_point_cloud_->attribute(normal_att_id);
       buffer()->Encode(normal_att->GetAddress(normal_att->mapped_index(v)),
                        normal_att->byte_stride());
     }
     if (color_att_id >= 0) {
-      printf("[YC] color_att_id\n"); // [YC] add: check print
+      // printf("[YC] color_att_id\n"); // [YC] add: check print
       const auto *const color_att = in_point_cloud_->attribute(color_att_id);
       buffer()->Encode(color_att->GetAddress(color_att->mapped_index(v)),
                        color_att->byte_stride());
     }
-    // [YC] start: write the vertex value to buffer
-    if (new_att_id >= 0) {
-      printf("[YC] new_att_id\n"); // [YC] add: check print
-      const auto *const new_att = in_point_cloud_->attribute(new_att_id);
-      buffer()->Encode(new_att->GetAddress(new_att->mapped_index(v)),
-                       new_att->byte_stride());
+    
+    //! [YC] start: write the vertex value to buffer
+    if (f_dc_att_id >= 0) {
+      // printf("[YC] f_dc_att_id\n"); // [YC] add: check print
+      const auto *const f_dc_att = in_point_cloud_->attribute(f_dc_att_id);
+      buffer()->Encode(f_dc_att->GetAddress(f_dc_att->mapped_index(v)),
+                       f_dc_att->byte_stride());
     }
-    // [YC] end
+    if (f_rest_att_id >= 0) {
+      // printf("[YC] f_rest_att_id\n"); // [YC] add: check print
+      const auto *const f_rest_att = in_point_cloud_->attribute(f_rest_att_id);
+      buffer()->Encode(f_rest_att->GetAddress(f_rest_att->mapped_index(v)),
+                       f_rest_att->byte_stride());
+    }
+    if (opacity_att_id >= 0) {
+      // printf("[YC] opacity_att_id\n"); // [YC] add: check print
+      const auto *const opacity_att = in_point_cloud_->attribute(opacity_att_id);
+      buffer()->Encode(opacity_att->GetAddress(opacity_att->mapped_index(v)),
+                       opacity_att->byte_stride());
+    }
+    if (scale_att_id >= 0) {
+      // printf("[YC] scale_att_id\n"); // [YC] add: check print
+      const auto *const scale_att = in_point_cloud_->attribute(scale_att_id);
+      buffer()->Encode(scale_att->GetAddress(scale_att->mapped_index(v)),
+                       scale_att->byte_stride());
+    }
+    if (rot_att_id >= 0) {
+      // printf("[YC] rot_att_id\n"); // [YC] add: check print
+      const auto *const rot_att = in_point_cloud_->attribute(rot_att_id);
+      buffer()->Encode(rot_att->GetAddress(rot_att->mapped_index(v)),
+                       rot_att->byte_stride());
+    }
+
+    //! [YC] end
   }
 
   if (in_mesh_) {

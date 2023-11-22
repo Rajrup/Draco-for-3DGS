@@ -76,7 +76,9 @@ class EncoderBuffer {
     // Assuming data is an array of floats
     const float *float_data = reinterpret_cast<const float *>(data);
     for (size_t i = 0; i < data_size / sizeof(float); ++i) {
+      if(std::isnan(float_data[i])){
         printf("[YC] Float value %zu: %.40f\n", i, float_data[i]);
+      }
     }
     // [YC] end
 

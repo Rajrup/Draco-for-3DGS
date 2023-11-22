@@ -157,6 +157,7 @@ bool PlyDecoder::ReadPropertiesToAttribute(
   return true;
 }
 
+//! [YC] note: important
 Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
   if (vertex_element == nullptr) {
     return Status(Status::INVALID_PARAMETER, "vertex_element is null");
@@ -232,21 +233,21 @@ Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
     }
   }
 
-  // [YC] start: Add for 3D gaussian
-  // Decode my attribute if present.
-  const PlyProperty *const my_r_prop = vertex_element->GetPropertyByName("my_nx");
-  const PlyProperty *const my_g_prop = vertex_element->GetPropertyByName("my_ny");
-  const PlyProperty *const my_b_prop = vertex_element->GetPropertyByName("my_nz");
-  if (my_r_prop != nullptr && my_g_prop != nullptr && my_b_prop != nullptr) {
+  //! [YC] start: Add for 3D gaussian
+  // Decode f_dc
+  const PlyProperty *const f_dc_0 = vertex_element->GetPropertyByName("f_dc_0");
+  const PlyProperty *const f_dc_1 = vertex_element->GetPropertyByName("f_dc_1");
+  const PlyProperty *const f_dc_2 = vertex_element->GetPropertyByName("f_dc_2");
+  if (f_dc_0 != nullptr && f_dc_1 != nullptr && f_dc_2 != nullptr) {
     // For now, all normal properties must be set and of type float32
-    if (my_r_prop->data_type() == DT_FLOAT32 &&
-        my_g_prop->data_type() == DT_FLOAT32 &&
-        my_b_prop->data_type() == DT_FLOAT32) {
-      PlyPropertyReader<float> x_reader(my_r_prop);
-      PlyPropertyReader<float> y_reader(my_g_prop);
-      PlyPropertyReader<float> z_reader(my_b_prop);
+    if (f_dc_0->data_type() == DT_FLOAT32 &&
+        f_dc_1->data_type() == DT_FLOAT32 &&
+        f_dc_2->data_type() == DT_FLOAT32) {
+      PlyPropertyReader<float> x_reader(f_dc_0);
+      PlyPropertyReader<float> y_reader(f_dc_1);
+      PlyPropertyReader<float> z_reader(f_dc_2);
       GeometryAttribute va;
-      va.Init(GeometryAttribute::NEW_ATTRIBUTE, nullptr, 3, DT_FLOAT32, false,
+      va.Init(GeometryAttribute::F_DC, nullptr, 3, DT_FLOAT32, false,
               sizeof(float) * 3, 0);
       const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
       for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
@@ -259,7 +260,100 @@ Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
       }
     }
   }
-  // [YC] end
+  
+  // Decode f_rest. Will not be safe because without any check
+  GeometryAttribute va;
+  va.Init(GeometryAttribute::F_REST, nullptr, 45, DT_FLOAT32, false, sizeof(float) * 45, 0);
+  const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+  for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+    std::array<float, 45> val;
+    for(int restNum = 0; restNum < 45; restNum++){
+      const PlyProperty *const f_rest_x = vertex_element->GetPropertyByName("f_rest_" + std::to_string(restNum));
+      PlyPropertyReader<float> reader(f_rest_x);
+      val[restNum] = reader.ReadValue(i);
+    }
+    out_point_cloud_->attribute(att_id)->SetAttributeValue(
+    AttributeValueIndex(i), &val[0]);
+  }
+
+  // Decode opacity
+  const PlyProperty *const opacity = vertex_element->GetPropertyByName("opacity");
+  if (opacity != nullptr) {
+    // For now, all normal properties must be set and of type float32
+    if (opacity->data_type() == DT_FLOAT32) {
+      PlyPropertyReader<float> x_reader(opacity);
+      GeometryAttribute va;
+      va.Init(GeometryAttribute::OPACITY, nullptr, 1, DT_FLOAT32, false,
+              sizeof(float) * 1, 0);
+      const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+      for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+        std::array<float, 1> val;
+        val[0] = x_reader.ReadValue(i);
+        out_point_cloud_->attribute(att_id)->SetAttributeValue(
+            AttributeValueIndex(i), &val[0]);
+      }
+    }
+  }
+  
+  // Decode scale
+  const PlyProperty *const scale_0 = vertex_element->GetPropertyByName("scale_0");
+  const PlyProperty *const scale_1 = vertex_element->GetPropertyByName("scale_1");
+  const PlyProperty *const scale_2 = vertex_element->GetPropertyByName("scale_2");
+  if (scale_0 != nullptr && scale_1 != nullptr && scale_2 != nullptr) {
+    // For now, all normal properties must be set and of type float32
+    if (scale_0->data_type() == DT_FLOAT32 &&
+        scale_1->data_type() == DT_FLOAT32 &&
+        scale_2->data_type() == DT_FLOAT32) {
+      PlyPropertyReader<float> x_reader(scale_0);
+      PlyPropertyReader<float> y_reader(scale_1);
+      PlyPropertyReader<float> z_reader(scale_2);
+      GeometryAttribute va;
+      va.Init(GeometryAttribute::SCALE, nullptr, 3, DT_FLOAT32, false,
+              sizeof(float) * 3, 0);
+      const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+      for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+        std::array<float, 3> val;
+        val[0] = x_reader.ReadValue(i);
+        val[1] = y_reader.ReadValue(i);
+        val[2] = z_reader.ReadValue(i);
+        out_point_cloud_->attribute(att_id)->SetAttributeValue(
+            AttributeValueIndex(i), &val[0]);
+      }
+    }
+  }
+
+  // Decode rot
+  const PlyProperty *const rot_0 = vertex_element->GetPropertyByName("rot_0");
+  const PlyProperty *const rot_1 = vertex_element->GetPropertyByName("rot_1");
+  const PlyProperty *const rot_2 = vertex_element->GetPropertyByName("rot_2");
+  const PlyProperty *const rot_3 = vertex_element->GetPropertyByName("rot_3");
+  if (rot_0 != nullptr && rot_1 != nullptr && rot_2 != nullptr && rot_3 != nullptr) {
+    // For now, all normal properties must be set and of type float32
+    if (rot_0->data_type() == DT_FLOAT32 &&
+        rot_1->data_type() == DT_FLOAT32 &&
+        rot_2->data_type() == DT_FLOAT32 &&
+        rot_3->data_type() == DT_FLOAT32) {
+      PlyPropertyReader<float> x_reader(rot_0);
+      PlyPropertyReader<float> y_reader(rot_1);
+      PlyPropertyReader<float> z_reader(rot_2);
+      PlyPropertyReader<float> w_reader(rot_3);
+      GeometryAttribute va;
+      va.Init(GeometryAttribute::ROT, nullptr, 4, DT_FLOAT32, false,
+              sizeof(float) * 4, 0);
+      const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+      for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+        std::array<float, 4> val;
+        val[0] = x_reader.ReadValue(i);
+        val[1] = y_reader.ReadValue(i);
+        val[2] = z_reader.ReadValue(i);
+        val[3] = w_reader.ReadValue(i);
+        out_point_cloud_->attribute(att_id)->SetAttributeValue(
+            AttributeValueIndex(i), &val[0]);
+      }
+    }
+  }
+
+  //! [YC] end
 
   // Decode color data if present.
   int num_colors = 0;

@@ -67,7 +67,14 @@ class GeometryAttribute {
     JOINTS,
     WEIGHTS,
 #endif
-    NEW_ATTRIBUTE, // [YC] add
+    //! [YC] start: add new attribute
+    NEW_ATTRIBUTE,
+    F_DC,
+    F_REST,
+    OPACITY,
+    SCALE,
+    ROT,
+    //! [YC] end
     // Total number of different attribute types.
     // Always keep behind all named attributes.
     NAMED_ATTRIBUTES_COUNT,
