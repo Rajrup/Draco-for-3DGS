@@ -15,10 +15,10 @@ save_log_dir.mkdir(parents=True, exist_ok=True)
 numToCal = 1
 
 qp_values = [16]
-qn_values = [16] # normal don't change this
-qfd_values = qfr_values = qo_values = [16]
-qs_values = qr_values = [1]
-cl_values = [3, 5, 7, 9]
+qn_values = [1] # normal don't change this
+qfd_values = qfr_values = qo_values = [8]
+qs_values = qr_values = [16]
+cl_values = [3]
 
 qt_values = [0] # unuse
 qg_values = [0] # unuse

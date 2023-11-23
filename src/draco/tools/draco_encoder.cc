@@ -161,35 +161,35 @@ void PrintOptions(const draco::PointCloud &pc, const Options &options) {
 
   //! [YC] start: Add for visual output
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_DC) >= 0) {
-    if (options.rot_quantization_bits == 0) {
+    if (options.fDc_quantization_bits == 0) {
       printf("  f_dc: No quantization\n");
     } else {
       printf("  f_dc: Quantization = %d bits\n",
-             options.rot_quantization_bits);
+             options.fDc_quantization_bits);
     }
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST) >= 0) {
-    if (options.rot_quantization_bits == 0) {
+    if (options.fRest_quantization_bits == 0) {
       printf("  f_rest: No quantization\n");
     } else {
       printf("  f_rest: Quantization = %d bits\n",
-             options.rot_quantization_bits);
+             options.fRest_quantization_bits);
     }
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::OPACITY) >= 0) {
-    if (options.rot_quantization_bits == 0) {
+    if (options.opacity_quantization_bits == 0) {
       printf("  Opacity: No quantization\n");
     } else {
       printf("  Opacity: Quantization = %d bits\n",
-             options.rot_quantization_bits);
+             options.opacity_quantization_bits);
     }
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::SCALE) >= 0) {
-    if (options.rot_quantization_bits == 0) {
+    if (options.scale_quantization_bits == 0) {
       printf("  Scale: No quantization\n");
     } else {
       printf("  Scale: Quantization = %d bits\n",
-             options.rot_quantization_bits);
+             options.scale_quantization_bits);
     }
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::ROT) >= 0) {
