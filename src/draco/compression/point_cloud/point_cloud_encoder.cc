@@ -40,17 +40,17 @@ Status PointCloudEncoder::Encode(const EncoderOptions &options,
   }
   DRACO_RETURN_IF_ERROR(EncodeHeader())
   DRACO_RETURN_IF_ERROR(EncodeMetadata())
-  printf("[YC] InitializeEncoder\n"); // [YC] add: print to check
+  // printf("[YC] InitializeEncoder\n"); // [YC] add: print to check
   if (!InitializeEncoder()) {
     return Status(Status::DRACO_ERROR, "Failed to initialize encoder.");
   }
-  printf("[YC] EncodeEncoderData\n"); // [YC] add: print to check
+  // printf("[YC] EncodeEncoderData\n"); // [YC] add: print to check
   if (!EncodeEncoderData()) {
     return Status(Status::DRACO_ERROR, "Failed to encode internal data.");
   }
-  printf("[YC] EncodeGeometryData\n"); // [YC] add: print to check
+  // printf("[YC] EncodeGeometryData\n"); // [YC] add: print to check
   DRACO_RETURN_IF_ERROR(EncodeGeometryData());
-  printf("[YC] EncodePointAttributes\n"); // [YC] add: print to check
+  // printf("[YC] EncodePointAttributes\n"); // [YC] add: print to check
   if (!EncodePointAttributes()) {
     return Status(Status::DRACO_ERROR, "Failed to encode point attributes.");
   }
@@ -73,15 +73,15 @@ Status PointCloudEncoder::EncodeHeader() {
   version_minor = encoder_type == POINT_CLOUD
                       ? kDracoPointCloudBitstreamVersionMinor
                       : kDracoMeshBitstreamVersionMinor;
-  printf("[YC] Encode version_major\n"); // [YC] add: print to check
+  // printf("[YC] Encode version_major\n"); // [YC] add: print to check
   buffer_->Encode(version_major);
-  printf("[YC] Encode version_minor\n"); // [YC] add: print to check
+  // printf("[YC] Encode version_minor\n"); // [YC] add: print to check
   buffer_->Encode(version_minor);
   // Type of the encoder (point cloud, mesh, ...).
-  printf("[YC] Encode encoder_type\n"); // [YC] add: print to check
+  // printf("[YC] Encode encoder_type\n"); // [YC] add: print to check
   buffer_->Encode(encoder_type);
   // Unique identifier for the selected encoding method (edgebreaker, etc...).
-  printf("[YC] Encode GetEncodingMethod()\n"); // [YC] add: print to check
+  // printf("[YC] Encode GetEncodingMethod()\n"); // [YC] add: print to check
   buffer_->Encode(GetEncodingMethod());
   // Reserved for flags.
   uint16_t flags = 0;
@@ -89,7 +89,7 @@ Status PointCloudEncoder::EncodeHeader() {
   if (point_cloud_->GetMetadata()) {
     flags |= METADATA_FLAG_MASK;
   }
-  printf("[YC] Encode flags\n"); // [YC] add: print to check
+  // printf("[YC] Encode flags\n"); // [YC] add: print to check
   buffer_->Encode(flags);
   return OkStatus();
 }
@@ -112,7 +112,7 @@ bool PointCloudEncoder::EncodePointAttributes() {
   }
 
   // Encode the number of attribute encoders.
-  printf("[YC] Encode the number of attribute encoders\n"); // [YC] add: print to check
+  // printf("[YC] Encode the number of attribute encoders\n"); // [YC] add: print to check
   buffer_->Encode(static_cast<uint8_t>(attributes_encoders_.size()));
   // Initialize all the encoders (this is used for example to init attribute
   // dependencies, no data is encoded in this step).
@@ -144,7 +144,7 @@ bool PointCloudEncoder::EncodePointAttributes() {
     }
   }
   
-  //! [YC] note: important
+  //! [YC] note: Encoder attribute
   // Lastly encode all the attributes using the provided attribute encoders.
   if (!EncodeAllAttributes()) {
     return false;
@@ -169,7 +169,7 @@ bool PointCloudEncoder::GenerateAttributesEncoders() {
 
 bool PointCloudEncoder::EncodeAllAttributes() {
   for (int att_encoder_id : attributes_encoder_ids_order_) {
-    printf("[YC] EncodeAllAttributes() att_encoder_id: %d\n", att_encoder_id); // [YC] add: print to check
+    // printf("[YC] EncodeAllAttributes() att_encoder_id: %d\n", att_encoder_id); // [YC] add: print to check
     if (!attributes_encoders_[att_encoder_id]->EncodeAttributes(buffer_)) {
       return false;
     }

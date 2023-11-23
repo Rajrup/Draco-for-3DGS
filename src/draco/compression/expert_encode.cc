@@ -51,7 +51,7 @@ Status ExpertEncoder::EncodeToBuffer(EncoderBuffer *out_buffer) {
 Status ExpertEncoder::EncodePointCloudToBuffer(const PointCloud &pc,
                                                EncoderBuffer *out_buffer) {
 #ifdef DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED
-  printf("[YC] DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED\n");  // [YC] add: check print
+  // printf("[YC] DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED\n");  // [YC] add: check print
   std::unique_ptr<PointCloudEncoder> encoder;
   const int encoding_method = options().GetGlobalInt("encoding_method", -1);
 
@@ -68,32 +68,32 @@ Status ExpertEncoder::EncodePointCloudToBuffer(const PointCloud &pc,
     // are satisfied for all attributes:
     //     -data type is float32 and quantization is enabled, OR
     //     -data type is uint32, uint16, uint8 or int32, int16, int8
-    printf("[YC] pc.num_attributes(): %d\n",
-           pc.num_attributes());  // [YC] add: check print
+    //! [YC] note
+    // printf("[YC] pc.num_attributes(): %d\n", pc.num_attributes());  // [YC] add: check print
     // [YC] note: Just checking if all the attributes can kd_tree
     for (int i = 0; i < pc.num_attributes(); ++i) {
-      printf("[YC] loop i: %d\n", i);  // [YC] add: check print
-      const PointAttribute *const att = pc.attribute(i);
-      if (kd_tree_possible && att->data_type() != DT_FLOAT32 &&
-          att->data_type() != DT_UINT32 && att->data_type() != DT_UINT16 &&
-          att->data_type() != DT_UINT8 && att->data_type() != DT_INT32 &&
-          att->data_type() != DT_INT16 && att->data_type() != DT_INT8) {
-        printf("[YC] OTHERS i: %d\n", i);  // [YC] add: check print
-        kd_tree_possible = false;
-      }
-      if (kd_tree_possible && att->data_type() == DT_FLOAT32 &&
-          options().GetAttributeInt(i, "quantization_bits", -1) <= 0) {
-        printf("[YC] DT_FLOAT32 i: %d\n", i);  // [YC] add: check print
-        kd_tree_possible = false;              // Quantization not enabled.
-      }
-      if (!kd_tree_possible) {
-        printf("[YC] !kd_tree_possible i: %d\n", i);  // [YC] add: check print
-        break;
-      }
+        // printf("[YC] Attribute num i: %d, quantization_bits: %d\n", i, options().GetAttributeInt(i, "quantization_bits", -1));  // [YC] add: check print
+        const PointAttribute *const att = pc.attribute(i);
+        if (kd_tree_possible && att->data_type() != DT_FLOAT32 &&
+            att->data_type() != DT_UINT32 && att->data_type() != DT_UINT16 &&
+            att->data_type() != DT_UINT8 && att->data_type() != DT_INT32 &&
+            att->data_type() != DT_INT16 && att->data_type() != DT_INT8) {
+            // printf("[YC] OTHERS i: %d\n", i);  // [YC] add: check print
+            kd_tree_possible = false;
+        }
+        if (kd_tree_possible && att->data_type() == DT_FLOAT32 &&
+            options().GetAttributeInt(i, "quantization_bits", -1) <= 0) {
+            // printf("[YC] DT_FLOAT32 i: %d\n", i);  // [YC] add: check print
+            kd_tree_possible = false;              // Quantization not enabled.
+        }
+        if (!kd_tree_possible) {
+            // printf("[YC] !kd_tree_possible i: %d\n", i);  // [YC] add: check print
+            break;
+        }
     }
 
     if (kd_tree_possible) {
-        printf("[YC] All check pass\n");  // [YC] add: check print
+        // printf("[YC] All check pass\n");  // [YC] add: check print
       // Create kD-tree encoder (all checks passed).
       encoder.reset(new PointCloudKdTreeEncoder());
     } else if (encoding_method == POINT_CLOUD_KD_TREE_ENCODING) {
@@ -108,7 +108,7 @@ Status ExpertEncoder::EncodePointCloudToBuffer(const PointCloud &pc,
     }
     encoder->SetPointCloud(pc);
     DRACO_RETURN_IF_ERROR(encoder->Encode(options(), out_buffer));
-    printf("[YC] encoder->num_encoded_points(): %zu\n", encoder->num_encoded_points()); // [YC] add: check print, weird
+    // printf("[YC] encoder->num_encoded_points(): %zu\n", encoder->num_encoded_points()); // [YC] add: check print, weird
     set_num_encoded_points(encoder->num_encoded_points());
     set_num_encoded_faces(0);
     return OkStatus();

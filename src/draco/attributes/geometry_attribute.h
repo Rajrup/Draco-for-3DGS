@@ -57,6 +57,13 @@ class GeometryAttribute {
     // predefined use case. Such attributes are often used for a shader specific
     // data.
     GENERIC,
+    //! [YC] start: Add new attribute enum
+    F_DC,
+    F_REST,
+    OPACITY,
+    SCALE,
+    ROT,
+    //! [YC] end
 #ifdef DRACO_TRANSCODER_SUPPORTED
     // TODO(ostava): Adding a new attribute would be bit-stream change for GLTF.
     // Older decoders wouldn't know what to do with this attribute type. This
@@ -67,14 +74,6 @@ class GeometryAttribute {
     JOINTS,
     WEIGHTS,
 #endif
-    //! [YC] start: add new attribute
-    NEW_ATTRIBUTE,
-    F_DC,
-    F_REST,
-    OPACITY,
-    SCALE,
-    ROT,
-    //! [YC] end
     // Total number of different attribute types.
     // Always keep behind all named attributes.
     NAMED_ATTRIBUTES_COUNT,

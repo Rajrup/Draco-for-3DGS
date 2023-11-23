@@ -200,13 +200,13 @@ bool DynamicIntegerPointsKdTreeEncoder<compression_level_t>::EncodePoints(
   half_encoder_.StartEncoding();
 
   EncodeInternal(begin, end);
-  printf("[YC] numbers_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
+  // printf("[YC] numbers_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
   numbers_encoder_.EndEncoding(buffer);
-  printf("[YC] remaining_bits_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
+  // printf("[YC] remaining_bits_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
   remaining_bits_encoder_.EndEncoding(buffer);
-  printf("[YC] axis_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
+  // printf("[YC] axis_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
   axis_encoder_.EndEncoding(buffer);
-  printf("[YC] half_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
+  // printf("[YC] half_encoder_.EndEncoding(buffer)\n"); // [YC] add: print to check
   half_encoder_.EndEncoding(buffer);
 
   return true;

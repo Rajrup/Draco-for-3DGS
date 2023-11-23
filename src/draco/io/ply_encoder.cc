@@ -78,7 +78,7 @@ bool PlyEncoder::EncodeInternal() {
       in_point_cloud_->GetNamedAttributeId(GeometryAttribute::TEX_COORD);
   const int color_att_id =
       in_point_cloud_->GetNamedAttributeId(GeometryAttribute::COLOR);
-  //! [YC] start
+  //! [YC] start: Get attribute id
   const int f_dc_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_DC); 
   const int f_rest_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST); 
   const int opacity_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::OPACITY); 
@@ -135,7 +135,7 @@ bool PlyEncoder::EncodeInternal() {
     }
   }
   
-  //! [YC] start: add properties to header. Here have order issue
+  //! [YC] start: Add properties to header. Here have order issue
   if (f_dc_att_id >= 0) {
     out << "property " << GetAttributeDataType(f_dc_att_id) << " f_dc_0"
         << std::endl;
@@ -189,14 +189,14 @@ bool PlyEncoder::EncodeInternal() {
   // Not very efficient but the header should be small so just copy the stream
   // to a string.
   const std::string header_str = out.str();
-  printf("[YC] Encode header\n"); // [YC] add: print to check
+  // printf("[YC] Encode header\n"); // [YC] add: print to check
   buffer()->Encode(header_str.data(), header_str.length());
 
   // Store point attributes.
   const int num_points = in_point_cloud_->num_points();
   printf("[YC] num_points: %d\n", num_points); // [YC] add: check print
   for (PointIndex v(0); v < num_points; ++v) {
-    printf("[YC] point: %d\n", v); // [YC] add: check print
+    // printf("[YC] point: %d\n", v); // [YC] add: check print
     // printf("[YC] pos_att\n"); // [YC] add: check print
     const auto *const pos_att = in_point_cloud_->attribute(pos_att_id);
     buffer()->Encode(pos_att->GetAddress(pos_att->mapped_index(v)),
@@ -215,7 +215,7 @@ bool PlyEncoder::EncodeInternal() {
                        color_att->byte_stride());
     }
     
-    //! [YC] start: write the vertex value to buffer
+    //! [YC] start: Write the vertex value to buffer
     if (f_dc_att_id >= 0) {
       // printf("[YC] f_dc_att_id\n"); // [YC] add: check print
       const auto *const f_dc_att = in_point_cloud_->attribute(f_dc_att_id);
@@ -246,7 +246,6 @@ bool PlyEncoder::EncodeInternal() {
       buffer()->Encode(rot_att->GetAddress(rot_att->mapped_index(v)),
                        rot_att->byte_stride());
     }
-
     //! [YC] end
   }
 
