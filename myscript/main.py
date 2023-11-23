@@ -37,7 +37,7 @@ if __name__ == "__main__":
     scene_name = "penny"
     qp_values = [16]
     qn_values = [1] # normal don't change this
-    qfd_values = qfr_values = qo_values = [8]
+    qfd_values = qfr_values = qo_values = [16]
     qs_values = qr_values = [16]
     cl_values = [3]
 
