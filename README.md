@@ -32,3 +32,17 @@ make
 -i ./myData/ficus_3dgs_compress.drc \
 -o ./myData/ficus_3dgs_distorted.ply
 ```
+
+# For experiment
+## Encode (Using my_encode.py and json file)
+```bash
+python my_encoder.py -jp ../myJson/template_sh0.json
+```
+
+## Decode (Using my_decode.py and json file)
+```bash
+python my_decoder.py -jp ../myJson/template.json
+```
+
+## Configuration json file
+Based on the template json file at `myJson/template.json`

@@ -167,6 +167,7 @@ void PointCloud::SetAttribute(int att_id, std::unique_ptr<PointAttribute> pa) {
 
 void PointCloud::DeleteAttribute(int att_id) {
   if (att_id < 0 || att_id >= attributes_.size()) {
+    printf("Attribute does not exist.");// Attribute does not exist.
     return;  // Attribute does not exist.
   }
   const GeometryAttribute::Type att_type =

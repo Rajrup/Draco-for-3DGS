@@ -48,8 +48,11 @@ struct Options {
   int fDc_quantization_bits;
   // int fRest_quantization_bits;
   int fRest_1_quantization_bits;
+  bool fRest_1_deleted;
   int fRest_2_quantization_bits;
+  bool fRest_2_deleted;
   int fRest_3_quantization_bits;
+  bool fRest_3_deleted;
   int opacity_quantization_bits;
   int scale_quantization_bits;
   int rot_quantization_bits;
@@ -73,8 +76,11 @@ Options::Options()
       fDc_quantization_bits (16),
       // fRest_quantization_bits (16),
       fRest_1_quantization_bits (16),
+      fRest_1_deleted (false),
       fRest_2_quantization_bits (16),
+      fRest_2_deleted (false),
       fRest_3_quantization_bits (16),
+      fRest_3_deleted (false),
       opacity_quantization_bits (16),
       scale_quantization_bits (16),
       rot_quantization_bits (16) {}
@@ -197,6 +203,8 @@ void PrintOptions(const draco::PointCloud &pc, const Options &options) {
       printf("  f_rest_1: Quantization = %d bits\n",
              options.fRest_1_quantization_bits);
     }
+  } else if (options.fRest_1_deleted) {
+    printf("  fRest_1: Skipped\n");
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST_2) >= 0) {
     if (options.fRest_2_quantization_bits == 0) {
@@ -205,6 +213,8 @@ void PrintOptions(const draco::PointCloud &pc, const Options &options) {
       printf("  f_rest_2: Quantization = %d bits\n",
              options.fRest_2_quantization_bits);
     }
+  } else if (options.fRest_2_deleted) {
+    printf("  fRest_2: Skipped\n");
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST_3) >= 0) {
     if (options.fRest_3_quantization_bits == 0) {
@@ -213,6 +223,8 @@ void PrintOptions(const draco::PointCloud &pc, const Options &options) {
       printf("  f_rest_3: Quantization = %d bits\n",
              options.fRest_3_quantization_bits);
     }
+  } else if (options.fRest_3_deleted) {
+    printf("  fRest_3: Skipped\n");
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::OPACITY) >= 0) {
     if (options.opacity_quantization_bits == 0) {
@@ -514,15 +526,47 @@ int main(int argc, char **argv) {
           pc->GetNamedAttributeId(draco::GeometryAttribute::GENERIC, 0));
     }
   }
+  //! [YC] start: skip necessary SH
+  if (options.fRest_1_quantization_bits < 0) {
+    if (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_1) > 0) {
+      options.fRest_1_deleted = true;
+    }
+    while (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_1) > 0) {
+      pc->DeleteAttribute(
+          pc->GetNamedAttributeId(draco::GeometryAttribute::F_REST_1, 0));
+    }
+  }
+  if (options.fRest_2_quantization_bits < 0) {
+    if (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_2) > 0) {
+      options.fRest_2_deleted = true;
+    }
+    while (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_2) > 0) {
+      pc->DeleteAttribute(
+          pc->GetNamedAttributeId(draco::GeometryAttribute::F_REST_2, 0));
+    }
+  }
+  if (options.fRest_3_quantization_bits < 0) {
+    if (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_3) > 0) {
+      options.fRest_3_deleted = true;
+    }
+    while (pc->NumNamedAttributes(draco::GeometryAttribute::F_REST_3) > 0) {
+      pc->DeleteAttribute(
+          pc->GetNamedAttributeId(draco::GeometryAttribute::F_REST_3, 0));
+    }
+  }
+  //! [YC] end
+  
 #ifdef DRACO_ATTRIBUTE_INDICES_DEDUPLICATION_SUPPORTED
   // If any attribute has been deleted, run deduplication of point indices again
   // as some points can be possibly combined.
-  if (options.tex_coords_deleted || options.normals_deleted ||
-      options.generic_deleted) {
+  if (options.tex_coords_deleted || options.normals_deleted || options.generic_deleted || 
+      options.fRest_1_deleted || options.fRest_2_deleted || options.fRest_3_deleted
+      ) {
     pc->DeduplicatePointIds();
   }
 #endif
 
+  //! [YC] note
   // Convert compression level to speed (that 0 = slowest, 10 = fastest).
   const int speed = 10 - options.compression_level;
 
@@ -546,14 +590,28 @@ int main(int argc, char **argv) {
                                      options.generic_quantization_bits);
   }
   //! [YC] start: Set quantization bits to new attribute
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_DC, options.fDc_quantization_bits); // for now folow qn
+  if (options.fDc_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::F_DC, options.fDc_quantization_bits); // for now folow qn
+  }
   // encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST, options.fRest_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_1, options.fRest_1_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_2, options.fRest_2_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_3, options.fRest_3_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::OPACITY, options.opacity_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::SCALE, options.scale_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::ROT, options.rot_quantization_bits); // for now folow qn
+  if (options.fRest_1_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_1, options.fRest_1_quantization_bits); // for now folow qn
+  }
+  if (options.fRest_2_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_2, options.fRest_2_quantization_bits); // for now folow qn
+  }
+  if (options.fRest_3_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_3, options.fRest_3_quantization_bits); // for now folow qn
+  }
+  if (options.opacity_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::OPACITY, options.opacity_quantization_bits); // for now folow qn
+  }
+  if (options.scale_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::SCALE, options.scale_quantization_bits); // for now folow qn
+  }
+  if (options.rot_quantization_bits > 0) {
+    encoder.SetAttributeQuantization(draco::GeometryAttribute::ROT, options.rot_quantization_bits); // for now folow qn
+  }
   //! [YC] end
 
   encoder.SetSpeedOptions(speed, speed);
