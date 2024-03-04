@@ -79,8 +79,11 @@ bool PlyEncoder::EncodeInternal() {
   const int color_att_id =
       in_point_cloud_->GetNamedAttributeId(GeometryAttribute::COLOR);
   //! [YC] start: Get attribute id
-  const int f_dc_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_DC); 
-  const int f_rest_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST); 
+  const int f_dc_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_DC);
+  // const int f_rest_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST); 
+  const int f_rest_1_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST_1);
+  const int f_rest_2_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST_2);
+  const int f_rest_3_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::F_REST_3); 
   const int opacity_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::OPACITY); 
   const int scale_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::SCALE); 
   const int rot_att_id = in_point_cloud_->GetNamedAttributeId(GeometryAttribute::ROT); 
@@ -103,7 +106,6 @@ bool PlyEncoder::EncodeInternal() {
     tex_coord_att_id = -1;
   }
 
-  // ![YC] note: need to add
   out << "property " << GetAttributeDataType(pos_att_id) << " x" << std::endl;
   out << "property " << GetAttributeDataType(pos_att_id) << " y" << std::endl;
   out << "property " << GetAttributeDataType(pos_att_id) << " z" << std::endl;
@@ -144,9 +146,27 @@ bool PlyEncoder::EncodeInternal() {
     out << "property " << GetAttributeDataType(f_dc_att_id) << " f_dc_2"
         << std::endl;
   }
-  if (f_rest_att_id >= 0) {
-    for(int i = 0; i < 45; i++){
-      out << "property " << GetAttributeDataType(f_dc_att_id) << " f_rest_" << i
+  // if (f_rest_att_id >= 0) {
+  //   for(int i = 0; i < 45; i++){
+  //     out << "property " << GetAttributeDataType(f_dc_att_id) << " f_rest_" << i
+  //         << std::endl;
+  //   }
+  // }
+  if (f_rest_1_att_id >= 0) {
+    for(int i = 0; i < 9; i++){
+      out << "property " << GetAttributeDataType(f_rest_1_att_id) << " f_rest_" << i
+          << std::endl;
+    }
+  }
+  if (f_rest_2_att_id >= 0) {
+    for(int i = 9; i < 24; i++){ // 24 = 9 + 15
+      out << "property " << GetAttributeDataType(f_rest_2_att_id) << " f_rest_" << i
+          << std::endl;
+    }
+  }
+  if (f_rest_3_att_id >= 0) {
+    for(int i = 24; i < 45; i++){ // 45 = 9 + 15 + 21
+      out << "property " << GetAttributeDataType(f_rest_3_att_id) << " f_rest_" << i
           << std::endl;
     }
   }
@@ -222,11 +242,29 @@ bool PlyEncoder::EncodeInternal() {
       buffer()->Encode(f_dc_att->GetAddress(f_dc_att->mapped_index(v)),
                        f_dc_att->byte_stride());
     }
-    if (f_rest_att_id >= 0) {
+    // if (f_rest_att_id >= 0) {
+    //   // printf("[YC] f_rest_att_id\n"); // [YC] add: check print
+    //   const auto *const f_rest_att = in_point_cloud_->attribute(f_rest_att_id);
+    //   buffer()->Encode(f_rest_att->GetAddress(f_rest_att->mapped_index(v)),
+    //                    f_rest_att->byte_stride());
+    // }
+    if (f_rest_1_att_id >= 0) {
       // printf("[YC] f_rest_att_id\n"); // [YC] add: check print
-      const auto *const f_rest_att = in_point_cloud_->attribute(f_rest_att_id);
-      buffer()->Encode(f_rest_att->GetAddress(f_rest_att->mapped_index(v)),
-                       f_rest_att->byte_stride());
+      const auto *const f_rest_1_att = in_point_cloud_->attribute(f_rest_1_att_id);
+      buffer()->Encode(f_rest_1_att->GetAddress(f_rest_1_att->mapped_index(v)),
+                       f_rest_1_att->byte_stride());
+    }
+    if (f_rest_2_att_id >= 0) {
+      // printf("[YC] f_rest_att_id\n"); // [YC] add: check print
+      const auto *const f_rest_2_att = in_point_cloud_->attribute(f_rest_2_att_id);
+      buffer()->Encode(f_rest_2_att->GetAddress(f_rest_2_att->mapped_index(v)),
+                       f_rest_2_att->byte_stride());
+    }
+    if (f_rest_3_att_id >= 0) {
+      // printf("[YC] f_rest_att_id\n"); // [YC] add: check print
+      const auto *const f_rest_3_att = in_point_cloud_->attribute(f_rest_3_att_id);
+      buffer()->Encode(f_rest_3_att->GetAddress(f_rest_3_att->mapped_index(v)),
+                       f_rest_3_att->byte_stride());
     }
     if (opacity_att_id >= 0) {
       // printf("[YC] opacity_att_id\n"); // [YC] add: check print

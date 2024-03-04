@@ -206,6 +206,7 @@ Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
     }
   }
 
+  //! [YC] start: Skip normal
   // Decode normals if present.
   const PlyProperty *const n_x_prop = vertex_element->GetPropertyByName("nx");
   const PlyProperty *const n_y_prop = vertex_element->GetPropertyByName("ny");
@@ -232,9 +233,10 @@ Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
       }
     }
   }
+  //! [YC] end
 
   //! [YC] start: Add for 3D gaussian
-  // Decode f_dc
+  // Decode f_dc (Order 0)
   const PlyProperty *const f_dc_0 = vertex_element->GetPropertyByName("f_dc_0");
   const PlyProperty *const f_dc_1 = vertex_element->GetPropertyByName("f_dc_1");
   const PlyProperty *const f_dc_2 = vertex_element->GetPropertyByName("f_dc_2");
@@ -260,19 +262,66 @@ Status PlyDecoder::DecodeVertexData(const PlyElement *vertex_element) {
       }
     }
   }
+
+  // // Decode f_rest (all together). Will not be safe because without any check
+  // GeometryAttribute va;
+  // va.Init(GeometryAttribute::F_REST_1, nullptr, 45, DT_FLOAT32, false, sizeof(float) * 45, 0);
+  // const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+  // for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+  //   std::array<float, 45> val;
+  //   for(int restNum = 0; restNum < 45; restNum++){
+  //     const PlyProperty *const f_rest_x = vertex_element->GetPropertyByName("f_rest_" + std::to_string(restNum));
+  //     PlyPropertyReader<float> reader(f_rest_x);
+  //     val[restNum] = reader.ReadValue(i);
+  //   }
+  //   out_point_cloud_->attribute(att_id)->SetAttributeValue(
+  //   AttributeValueIndex(i), &val[0]);
+  // }
   
-  // Decode f_rest. Will not be safe because without any check
+  // Decode f_rest (Order 1). (3 * 3 = 9) Will not be safe because without any check
   GeometryAttribute va;
-  va.Init(GeometryAttribute::F_REST, nullptr, 45, DT_FLOAT32, false, sizeof(float) * 45, 0);
-  const int att_id = out_point_cloud_->AddAttribute(va, true, num_vertices);
+  va.Init(GeometryAttribute::F_REST_1, nullptr, 9, DT_FLOAT32, false, sizeof(float) * 9, 0);
+  const int att_id_1 = out_point_cloud_->AddAttribute(va, true, num_vertices);
   for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
-    std::array<float, 45> val;
-    for(int restNum = 0; restNum < 45; restNum++){
+    std::array<float, 9> val;
+    for(int restNum = 0; restNum < 9; restNum++){
       const PlyProperty *const f_rest_x = vertex_element->GetPropertyByName("f_rest_" + std::to_string(restNum));
       PlyPropertyReader<float> reader(f_rest_x);
       val[restNum] = reader.ReadValue(i);
     }
-    out_point_cloud_->attribute(att_id)->SetAttributeValue(
+    out_point_cloud_->attribute(att_id_1)->SetAttributeValue(
+      AttributeValueIndex(i), &val[0]);
+  }
+
+  // Decode f_rest (Order 2) (5 * 3 = 15)
+  GeometryAttribute va_2;
+  const int numOfAtt_2 = 15; // numOfAtt == number of attribute
+  va_2.Init(GeometryAttribute::F_REST_2, nullptr, numOfAtt_2, DT_FLOAT32, false, sizeof(float) * numOfAtt_2, 0);
+  const int att_id_2 = out_point_cloud_->AddAttribute(va_2, true, num_vertices);
+  for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+    std::array<float, numOfAtt_2> val;
+    for(int restNum = 9; restNum < (9 + numOfAtt_2); restNum++){ // 24 = 9 + 15
+      const PlyProperty *const f_rest_x = vertex_element->GetPropertyByName("f_rest_" + std::to_string(restNum));
+      PlyPropertyReader<float> reader(f_rest_x);
+      val[restNum - 9] = reader.ReadValue(i);
+    }
+    out_point_cloud_->attribute(att_id_2)->SetAttributeValue(
+      AttributeValueIndex(i), &val[0]);
+  }
+
+  // Decode f_rest (Order 3) (7 * 3 = 21)
+  GeometryAttribute va_3;
+  const int numOfAtt_3 = 21; // numOfAtt == number of attribute
+  va_3.Init(GeometryAttribute::F_REST_3, nullptr, numOfAtt_3, DT_FLOAT32, false, sizeof(float) * numOfAtt_3, 0);
+  const int att_id_3 = out_point_cloud_->AddAttribute(va_3, true, num_vertices);
+  for (PointIndex::ValueType i = 0; i < num_vertices; ++i) {
+    std::array<float, numOfAtt_3> val;
+    for(int restNum = 24; restNum < (24 + numOfAtt_3); restNum++){ // 45 = 9 + 15 + 21
+      const PlyProperty *const f_rest_x = vertex_element->GetPropertyByName("f_rest_" + std::to_string(restNum));
+      PlyPropertyReader<float> reader(f_rest_x);
+      val[restNum - 24] = reader.ReadValue(i);
+    }
+    out_point_cloud_->attribute(att_id_3)->SetAttributeValue(
     AttributeValueIndex(i), &val[0]);
   }
 

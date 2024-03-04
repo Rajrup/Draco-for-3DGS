@@ -29,6 +29,9 @@ struct Options {
   Options();
 
   bool is_point_cloud;
+  //! [YC] start: add bool for arg
+  bool is_3dgs;
+  //! [YC] end
   int pos_quantization_bits;
   int tex_coords_quantization_bits;
   bool tex_coords_deleted;
@@ -43,7 +46,10 @@ struct Options {
   std::string output;
   //! [YC] start: Add variable for quantization bits
   int fDc_quantization_bits;
-  int fRest_quantization_bits;
+  // int fRest_quantization_bits;
+  int fRest_1_quantization_bits;
+  int fRest_2_quantization_bits;
+  int fRest_3_quantization_bits;
   int opacity_quantization_bits;
   int scale_quantization_bits;
   int rot_quantization_bits;
@@ -65,7 +71,10 @@ Options::Options()
       use_metadata(false) ,
       //! [YC] start: Set quantization bits
       fDc_quantization_bits (16),
-      fRest_quantization_bits (16),
+      // fRest_quantization_bits (16),
+      fRest_1_quantization_bits (16),
+      fRest_2_quantization_bits (16),
+      fRest_3_quantization_bits (16),
       opacity_quantization_bits (16),
       scale_quantization_bits (16),
       rot_quantization_bits (16) {}
@@ -81,6 +90,11 @@ void Usage() {
   printf(
       "  -point_cloud          forces the input to be encoded as a point "
       "cloud.\n");
+  //! [YC] start: add args
+  printf(
+      "  -3dgs          forces the input to be encoded as a "
+      "3dgs.\n");
+  //! [YC] end
   printf(
       "  -qp <value>           quantization bits for the position "
       "attribute, default=11.\n");
@@ -168,12 +182,36 @@ void PrintOptions(const draco::PointCloud &pc, const Options &options) {
              options.fDc_quantization_bits);
     }
   }
-  if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST) >= 0) {
-    if (options.fRest_quantization_bits == 0) {
-      printf("  f_rest: No quantization\n");
+  // if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST) >= 0) {
+  //   if (options.fRest_quantization_bits == 0) {
+  //     printf("  f_rest: No quantization\n");
+  //   } else {
+  //     printf("  f_rest: Quantization = %d bits\n",
+  //            options.fRest_quantization_bits);
+  //   }
+  // }
+  if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST_1) >= 0) {
+    if (options.fRest_1_quantization_bits == 0) {
+      printf("  f_rest_1: No quantization\n");
     } else {
-      printf("  f_rest: Quantization = %d bits\n",
-             options.fRest_quantization_bits);
+      printf("  f_rest_1: Quantization = %d bits\n",
+             options.fRest_1_quantization_bits);
+    }
+  }
+  if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST_2) >= 0) {
+    if (options.fRest_2_quantization_bits == 0) {
+      printf("  f_rest_2: No quantization\n");
+    } else {
+      printf("  f_rest_2: Quantization = %d bits\n",
+             options.fRest_2_quantization_bits);
+    }
+  }
+  if (pc.GetNamedAttributeId(draco::GeometryAttribute::F_REST_3) >= 0) {
+    if (options.fRest_3_quantization_bits == 0) {
+      printf("  f_rest_3: No quantization\n");
+    } else {
+      printf("  f_rest_3: Quantization = %d bits\n",
+             options.fRest_3_quantization_bits);
     }
   }
   if (pc.GetNamedAttributeId(draco::GeometryAttribute::OPACITY) >= 0) {
@@ -274,7 +312,13 @@ int main(int argc, char **argv) {
       options.output = argv[++i];
     } else if (!strcmp("-point_cloud", argv[i])) {
       options.is_point_cloud = true;
-    } else if (!strcmp("-qp", argv[i]) && i < argc_check) {
+    } 
+    //! [YC] start: add arg
+    // else if (!strcmp("-3dgs", argv[i])) {
+    //   options.is_3dgs = true;
+    // } 
+    //! [YC] end
+    else if (!strcmp("-qp", argv[i]) && i < argc_check) {
       options.pos_quantization_bits = StringToInt(argv[++i]);
       if (options.pos_quantization_bits > 30) {
         printf(
@@ -318,12 +362,40 @@ int main(int argc, char **argv) {
         return -1;
       }
     } 
-    // for f_rest
-    else if (!strcmp("-qfr", argv[i]) && i < argc_check) {
-      options.fRest_quantization_bits = StringToInt(argv[++i]);
-      if (options.fRest_quantization_bits > 30) {
+    // // for f_rest
+    // else if (!strcmp("-qfr", argv[i]) && i < argc_check) {
+    //   options.fRest_quantization_bits = StringToInt(argv[++i]);
+    //   if (options.fRest_quantization_bits > 30) {
+    //     printf(
+    //         "Error: The maximum number of quantization bits for f_rest "
+    //         "attributes is 30.\n");
+    //     return -1;
+    //   }
+    // } 
+    // for f_rest_1
+    else if (!strcmp("-qfr1", argv[i]) && i < argc_check) {
+      options.fRest_1_quantization_bits = StringToInt(argv[++i]);
+      if (options.fRest_1_quantization_bits > 30) {
         printf(
-            "Error: The maximum number of quantization bits for f_rest "
+            "Error: The maximum number of quantization bits for f_rest_1 "
+            "attributes is 30.\n");
+        return -1;
+      }
+    } 
+    else if (!strcmp("-qfr2", argv[i]) && i < argc_check) {
+      options.fRest_2_quantization_bits = StringToInt(argv[++i]);
+      if (options.fRest_2_quantization_bits > 30) {
+        printf(
+            "Error: The maximum number of quantization bits for f_rest_2 "
+            "attributes is 30.\n");
+        return -1;
+      }
+    } 
+    else if (!strcmp("-qfr3", argv[i]) && i < argc_check) {
+      options.fRest_3_quantization_bits = StringToInt(argv[++i]);
+      if (options.fRest_3_quantization_bits > 30) {
+        printf(
+            "Error: The maximum number of quantization bits for f_rest_3 "
             "attributes is 30.\n");
         return -1;
       }
@@ -457,7 +529,6 @@ int main(int argc, char **argv) {
   draco::Encoder encoder;
 
   // Setup encoder options.
-  // ![YC] note: need to add
   if (options.pos_quantization_bits > 0) {
     encoder.SetAttributeQuantization(draco::GeometryAttribute::POSITION,
                                      options.pos_quantization_bits);
@@ -476,7 +547,10 @@ int main(int argc, char **argv) {
   }
   //! [YC] start: Set quantization bits to new attribute
   encoder.SetAttributeQuantization(draco::GeometryAttribute::F_DC, options.fDc_quantization_bits); // for now folow qn
-  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST, options.fRest_quantization_bits); // for now folow qn
+  // encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST, options.fRest_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_1, options.fRest_1_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_2, options.fRest_2_quantization_bits); // for now folow qn
+  encoder.SetAttributeQuantization(draco::GeometryAttribute::F_REST_3, options.fRest_3_quantization_bits); // for now folow qn
   encoder.SetAttributeQuantization(draco::GeometryAttribute::OPACITY, options.opacity_quantization_bits); // for now folow qn
   encoder.SetAttributeQuantization(draco::GeometryAttribute::SCALE, options.scale_quantization_bits); // for now folow qn
   encoder.SetAttributeQuantization(draco::GeometryAttribute::ROT, options.rot_quantization_bits); // for now folow qn

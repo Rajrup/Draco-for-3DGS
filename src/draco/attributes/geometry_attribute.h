@@ -59,7 +59,9 @@ class GeometryAttribute {
     GENERIC,
     //! [YC] start: Add new attribute enum
     F_DC,
-    F_REST,
+    F_REST_1,
+    F_REST_2,
+    F_REST_3,
     OPACITY,
     SCALE,
     ROT,
