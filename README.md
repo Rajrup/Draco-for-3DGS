@@ -11,14 +11,14 @@ make
 ```bash
 ./build_dir/draco_encoder -point_cloud \
 -i ./myData/ficus_3dgs.ply \
--o ./myData/ficus_3dgs_compress.drc
+-o ./myData/ficus_3dgs_compressed.drc
 ```
 
 ## More complex setup
 ```bash
 ./build_dir/draco_encoder -point_cloud \
 -i ./myData/ficus_3dgs.ply \
--o ./myData/ficus_3dgs_compress.drc \
+-o ./myData/ficus_3dgs_compressed.drc \
 -qp 16 \
 -qfd 16 -qfr1 16 -qfr2 16 -qfr3 16 \
 -qo 16 \
