@@ -5,6 +5,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-ep", "--encoder_path", type=str)
     parser.add_argument("-jp", "--json_path", type=str)
     args = parser.parse_args()
     
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     # print(_3dgs_input_path)
     # print(draco_output_path)
     
-    os.system(f'../build_dir/draco_encoder -point_cloud \
+    os.system(f'{args.encoder_path} -point_cloud \
                 -i {_3dgs_input_path} \
                 -o {draco_output_path} \
                 -qp {data["qp"]} -qn {data["qn"]} \
@@ -32,3 +33,4 @@ if __name__ == "__main__":
                 -cl {data["cl"]} \
                 > {log_dir_path}/encode.log')
     
+    print("\n[YC] Finish Draco encode.")

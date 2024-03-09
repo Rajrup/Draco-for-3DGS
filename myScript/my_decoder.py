@@ -5,6 +5,7 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-dp", "--decoder_path", type=str)
     parser.add_argument("-jp", "--json_path", type=str)
     args = parser.parse_args()
     
@@ -22,8 +23,10 @@ if __name__ == "__main__":
     # print(draco_output_path)
     # print(_3dgs_output_path)
     
-    os.system(f'../build_dir/draco_decoder -point_cloud \
+    os.system(f'{args.decoder_path} -point_cloud \
                 -i {draco_output_path} \
                 -o {_3dgs_output_path} \
                 > {log_dir_path}/decode.log')
+    
+    print("\n[YC] Finish Draco decode.")
     

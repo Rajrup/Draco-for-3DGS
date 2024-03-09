@@ -3,10 +3,11 @@ from torch import nn
 import numpy as np
 from plyfile import PlyData, PlyElement
 from pathlib import Path
+import argparse
 # external lib
 # from scene.gaussian_model import GaussianModel
 
-def load_gaussian_ply(path: Path) -> list:
+def load_gaussian_ply(path: Path, sh_degree) -> list:
     plydata = PlyData.read(str(path))
 
     xyz = np.stack((np.asarray(plydata.elements[0]["x"]),
@@ -21,13 +22,18 @@ def load_gaussian_ply(path: Path) -> list:
     features_dc[:, 2, 0] = np.asarray(plydata.elements[0]["f_dc_2"])
 
     extra_f_names = [p.name for p in plydata.elements[0].properties if p.name.startswith("f_rest_")]
+    if len(extra_f_names) == 45:
+        pass
+    elif len(extra_f_names) == 0:
+        pass
     extra_f_names = sorted(extra_f_names, key = lambda x: int(x.split('_')[-1]))
-    assert len(extra_f_names)==3*(3 + 1) ** 2 - 3
+    # print(extra_f_names)
+    assert len(extra_f_names) == 3 * (sh_degree + 1) ** 2 - 3
     features_extra = np.zeros((xyz.shape[0], len(extra_f_names)))
     for idx, attr_name in enumerate(extra_f_names):
         features_extra[:, idx] = np.asarray(plydata.elements[0][attr_name])
     # Reshape (P,F*SH_coeffs) to (P, F, SH_coeffs except DC)
-    features_extra = features_extra.reshape((features_extra.shape[0], 3, (3 + 1) ** 2 - 1))
+    features_extra = features_extra.reshape((features_extra.shape[0], 3, (sh_degree + 1) ** 2 - 1))
 
     scale_names = [p.name for p in plydata.elements[0].properties if p.name.startswith("scale_")]
     scale_names = sorted(scale_names, key = lambda x: int(x.split('_')[-1]))
@@ -61,7 +67,8 @@ def save_gaussian_ply_for_draco(_xyz, _features_dc, _features_rest, _opacity, _s
         scale = _scaling.detach().cpu().numpy()
         rotation = _rotation.detach().cpu().numpy()
 
-        l = ['x', 'y', 'z', 'nx', 'ny', 'nz']
+        # l = ['x', 'y', 'z', 'nx', 'ny', 'nz']
+        l = ['x', 'y', 'z']
         # All channels except the 3 DC
         for i in range(_features_dc.shape[1]*_features_dc.shape[2]):
             l.append('f_dc_{}'.format(i))
@@ -76,7 +83,8 @@ def save_gaussian_ply_for_draco(_xyz, _features_dc, _features_rest, _opacity, _s
         dtype_full = [(attribute, 'f4') for attribute in l]
 
         elements = np.empty(xyz.shape[0], dtype=dtype_full)
-        attributes = np.concatenate((xyz, normals, f_dc, f_rest, opacities, scale, rotation), axis=1)
+        # attributes = np.concatenate((xyz, normals, f_dc, f_rest, opacities, scale, rotation), axis=1)
+        attributes = np.concatenate((xyz, f_dc, f_rest, opacities, scale, rotation), axis=1)
         elements[:] = list(map(tuple, attributes))
         el = PlyElement.describe(elements, 'vertex')
         
@@ -86,13 +94,15 @@ def save_gaussian_ply_for_draco(_xyz, _features_dc, _features_rest, _opacity, _s
             PlyData([el]).write(str(path))
 
 if __name__ == "__main__":
-    
-    for dir_name in ["lego"]:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--load_ply_path", type=str)
+    parser.add_argument("-o", "--save_ply_path", type=str)
+    parser.add_argument("-sh", "--sh_degree", type=int)
+    args = parser.parse_args()
 
-        load_ply_path = Path("..")/"expData"/"raw_ply"/dir_name/"point_cloud.ply"
-        output_ply_path = Path("..")/"expData"/"draco_input_ascii"/dir_name/"point_cloud.ply"
-        output_ply_path.parent.mkdir(parents=True, exist_ok=True)
+    load_ply_path = Path(args.load_ply_path)
+    output_ply_path = Path(args.save_ply_path)
+    output_ply_path.parent.mkdir(parents=True, exist_ok=True)
 
-        results = load_gaussian_ply(load_ply_path)
-        save_gaussian_ply_for_draco(results[0], results[1], results[2], results[3], results[4], results[5], output_ply_path, ascii=True)
-
+    results = load_gaussian_ply(load_ply_path, args.sh_degree)
+    save_gaussian_ply_for_draco(results[0], results[1], results[2], results[3], results[4], results[5], output_ply_path, ascii=True)
