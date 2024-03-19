@@ -93,7 +93,7 @@ Status ExpertEncoder::EncodePointCloudToBuffer(const PointCloud &pc,
     }
 
     if (kd_tree_possible) {
-        // printf("[YC] All check pass\n");  // [YC] add: check print
+        printf("[YC] kd_tree_possible\n");  // [YC] add: check print
       // Create kD-tree encoder (all checks passed).
       encoder.reset(new PointCloudKdTreeEncoder());
     } else if (encoding_method == POINT_CLOUD_KD_TREE_ENCODING) {
