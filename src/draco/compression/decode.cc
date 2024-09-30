@@ -68,7 +68,7 @@ StatusOr<std::unique_ptr<PointCloud>> Decoder::DecodePointCloudFromBuffer(
   DRACO_ASSIGN_OR_RETURN(EncodedGeometryType type,
                          GetEncodedGeometryType(in_buffer))
   if (type == POINT_CLOUD) {
-#ifdef DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED
+#ifdef DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED //! 3DGS will run this
     // printf("[YC] type == POINT_CLOUD\n"); // [YC] add: check print
     std::unique_ptr<PointCloud> point_cloud(new PointCloud());
     DRACO_RETURN_IF_ERROR(DecodeBufferToGeometry(in_buffer, point_cloud.get()))
@@ -91,6 +91,7 @@ StatusOr<std::unique_ptr<Mesh>> Decoder::DecodeMeshFromBuffer(
   return std::move(mesh);
 }
 
+//! [YC] Important
 Status Decoder::DecodeBufferToGeometry(DecoderBuffer *in_buffer,
                                        PointCloud *out_geometry) {
 #ifdef DRACO_POINT_CLOUD_COMPRESSION_SUPPORTED

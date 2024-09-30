@@ -119,6 +119,7 @@ Status PointCloudDecoder::Decode(const DecoderOptions &options,
   if (!DecodeGeometryData()) {
     return Status(Status::DRACO_ERROR, "Failed to decode geometry data.");
   }
+  //! [YC] Cause error in this step
   if (!DecodePointAttributes()) {
     return Status(Status::DRACO_ERROR, "Failed to decode point attributes.");
   }

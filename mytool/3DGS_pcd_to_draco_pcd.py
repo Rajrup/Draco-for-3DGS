@@ -3,6 +3,8 @@ from torch import nn
 import numpy as np
 from plyfile import PlyData, PlyElement
 from pathlib import Path
+from argparse import ArgumentParser
+
 # external lib
 # from scene.gaussian_model import GaussianModel
 
@@ -86,9 +88,14 @@ def save_gaussian_ply_for_draco(_xyz, _features_dc, _features_rest, _opacity, _s
             PlyData([el]).write(str(path))
 
 if __name__ == "__main__":
-    load_ply_path = Path("..")/"mytest"/"gaussian_input"/"point_cloud.ply"
-    output_ply_path = Path("..")/"mytest"/"draco_input"/"point_cloud.ply"
+    parser = ArgumentParser(description="Change binary 3DGS to ASCII pcd")
+    parser.add_argument('--inputPath', '-i', required=True, type=str)
+    parser.add_argument('--outputPath', '-o', required=True, type=str)
+    args = parser.parse_args()
+    
+    load_ply_path = Path(args.inputPath)
+    output_ply_path = Path(args.outputPath)
     
     results = load_gaussian_ply(load_ply_path)
-    save_gaussian_ply_for_draco(results[0], results[1], results[2], results[3], results[4], results[5], output_ply_path)
+    save_gaussian_ply_for_draco(results[0], results[1], results[2], results[3], results[4], results[5], output_ply_path, ascii=True)
 
