@@ -1,17 +1,31 @@
 # Draco for 3D Gaussian Splatting
 
+[TOC]
+
 This is a variant of [Google Draco Compression](https://google.github.io/draco/) to support [original 3D Gaussian splatting (3DGS)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) content.
 
 Draco is an open-source library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
 
 However, this project is only focused on encode and decode 3DGS, so compressing 3D meshes or 3D point cloud is not supported.
 
-## Build
+## Build (C++ execution)
+
 ### Build in Linux (Ubuntu)
 ```bash
 mkdir build_dir && cd build_dir
 cmake ../
 make
+```
+
+## Build (Javascript WebAssembly) (Test in MACOS)
+```bash
+mkdir build_dir && cd build_dir
+export EMSCRIPTEN=/path_to_emsdk/upstream/emscripten
+# for example: export EMSCRIPTEN=/Users/syjintw/Desktop/MMSys25_RU/emsdk/upstream/emscripten
+cmake ../ -DCMAKE_TOOLCHAIN_FILE=/path_to_emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DDRACO_WASM=ON
+# for example: cmake ../ -DCMAKE_TOOLCHAIN_FILE=/Users/syjintw/Desktop/MMSys25_RU/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DDRACO_WASM=ON
+make
+java -jar ../additional/closure-compiler-v20210302.jar --compilation_level SIMPLE --js draco_decoder.js --js_output_file draco_wasm_wrapper.js
 ```
 
 ## Usage
@@ -22,7 +36,7 @@ make
 python ./mytool/3DGS_pcd_to_draco_pcd.py -i ./myData/ficus.ply -o ./myData/ficus_3dgs.ply
 ```
 
-## Encode
+## Encode (C++ execution)
 ### Simple
 ```bash
 ./build_dir/draco_encoder -point_cloud \
@@ -42,7 +56,7 @@ python ./mytool/3DGS_pcd_to_draco_pcd.py -i ./myData/ficus.ply -o ./myData/ficus
 -cl 10
 ```
 
-## Decode
+## Decode (C++ execution)
 ```bash
 ./build_dir/draco_decoder \
 -i ./myData/ficus_3dgs_compress.drc \

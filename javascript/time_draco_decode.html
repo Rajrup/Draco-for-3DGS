@@ -12,7 +12,8 @@ let dracoDecoderType = {};
 // It is recommended to always pull your Draco JavaScript and WASM decoders
 // from this URL. Users will benefit from having the Draco decoder in cache
 // as more sites start using the static URL.
-let decoderPath = 'https://www.gstatic.com/draco/versioned/decoders/1.4.1/';
+// let decoderPath = 'https://www.gstatic.com/draco/versioned/decoders/1.4.1/';
+let decoderPath = 'http://127.0.0.1:8000/draco_adjusted/javascript/'; //! [YC] Change
 
 // This function loads a JavaScript file and adds it to the page. "path" is
 // the path to the JavaScript file. "onLoadFunc" is the function to be called
@@ -32,7 +33,8 @@ function loadWebAssemblyDecoder() {
   dracoDecoderType['wasmBinaryFile'] = 'draco_decoder.wasm';
 
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', decoderPath + 'draco_decoder.wasm', true);
+  // xhr.open('GET', decoderPath + 'draco_decoder.wasm', true);
+  xhr.open('GET', 'http://127.0.0.1:8000/draco_adjusted/build_dir/' + 'draco_decoder.wasm', true); //! [YC] Change
   xhr.responseType = 'arraybuffer';
 
   xhr.onload = function() {
@@ -69,8 +71,8 @@ function loadDracoDecoder() {
     // or an empty object to create a JavaScript decoder.
     loadJavaScriptFile(decoderPath + 'draco_decoder.js', createDecoderModule);
   } else {
-    loadJavaScriptFile(decoderPath + 'draco_wasm_wrapper.js',
-                       loadWebAssemblyDecoder);
+    loadJavaScriptFile('http://127.0.0.1:8000/draco_adjusted/build_dir/' + 'draco_wasm_wrapper.js',
+                       loadWebAssemblyDecoder); //! [YC] Change
   }
 }
 
@@ -164,6 +166,17 @@ function testMeshDecodingAsync(filenameList, index) {
         decodingStatus =
             decoder.DecodeArrayToPointCloud(byteArray, byteArray.length, dracoGeometry);
       }
+
+      console.log(dracoGeometry.num_attributes());
+      var attribute = decoder.GetAttributeByUniqueId(dracoGeometry, 0)
+      var numComponents = attribute.num_components();
+      var numPoints = dracoGeometry.num_points();
+      var numValues = numPoints * numComponents;
+      console.log(attribute);
+      console.log(numComponents);
+      console.log(numPoints);
+      console.log(numValues);
+
       const t1 = performance.now();
 
       addCell(filenameList[index], true);
