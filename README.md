@@ -1,6 +1,6 @@
 # Draco for 3D Gaussian Splatting
 
-[TOC]
+
 
 This is a variant of [Google Draco Compression](https://google.github.io/draco/) to support [original 3D Gaussian splatting (3DGS)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) content.
 
@@ -62,6 +62,12 @@ python ./mytool/3DGS_pcd_to_draco_pcd.py -i ./myData/ficus.ply -o ./myData/ficus
 -i ./myData/ficus_3dgs_compress.drc \
 -o ./myData/ficus_3dgs_distorted.ply
 ```
+
+## Decode (Javascript)
+
+Check the html file (/draco_adjusted/javascript/time_draco_decode.html)
+There are some important path need to change, and you can search them using "//! [YC]" as the searching keyword. Good Luck!!
+
 
 # For Experiment
 ## Encode (Using my_encode.py and json file)
