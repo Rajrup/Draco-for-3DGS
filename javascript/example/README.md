@@ -9,12 +9,12 @@ Draco mesh file and visualize it through threejs's fancy 3D tools.
 
 How to run the example code:
 
-1. Clone this project to a working directory, e.g. draco/.
+1. Clone this project to a working directory, e.g. `draco/`.
 
 2. From the project's root directory, start a local http server. E.g, with
-Python, you could run "python -m SimpleHTTPServer".
+Python, you could run `python -m SimpleHTTPServer` or `python -m http.server`.
 
-3. Load javascript/example/webgl_loader_draco.html. You should be able to see a
+3. Load `javascript/example/webgl_loader_draco.html`. You should be able to see a
 bunny rendered by threejs using Draco loader.
 
 ## Advanced Example

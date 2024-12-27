@@ -105,6 +105,7 @@ const draco::Status *Decoder::DecodeArrayToPointCloud(
     const char *data, size_t data_size, PointCloud *out_point_cloud) {
   DecoderBuffer buffer;
   buffer.Init(data, data_size);
+  printf("Test");
   return DecodeBufferToPointCloud(&buffer, out_point_cloud);
 }
 
