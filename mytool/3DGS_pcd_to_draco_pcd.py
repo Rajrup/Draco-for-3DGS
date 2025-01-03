@@ -5,6 +5,10 @@ from plyfile import PlyData, PlyElement
 from pathlib import Path
 from argparse import ArgumentParser
 
+"""
+Usage:
+./3DGS_pcd_to_draco_pcd.py -i gs.ply -o gs_ascii.ply
+"""
 # external lib
 # from scene.gaussian_model import GaussianModel
 
@@ -43,12 +47,19 @@ def load_gaussian_ply(path: Path) -> list:
     for idx, attr_name in enumerate(rot_names):
         rots[:, idx] = np.asarray(plydata.elements[0][attr_name])
 
-    results = [nn.Parameter(torch.tensor(xyz, dtype=torch.float, device="cuda").requires_grad_(True)), 
-               nn.Parameter(torch.tensor(features_dc, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True)),
-               nn.Parameter(torch.tensor(features_extra, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True)),
-               nn.Parameter(torch.tensor(opacities, dtype=torch.float, device="cuda").requires_grad_(True)),
-               nn.Parameter(torch.tensor(scales, dtype=torch.float, device="cuda").requires_grad_(True)),
-               nn.Parameter(torch.tensor(rots, dtype=torch.float, device="cuda").requires_grad_(True))
+    # results = [nn.Parameter(torch.tensor(xyz, dtype=torch.float, device="cuda").requires_grad_(True)), 
+    #            nn.Parameter(torch.tensor(features_dc, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True)),
+    #            nn.Parameter(torch.tensor(features_extra, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True)),
+    #            nn.Parameter(torch.tensor(opacities, dtype=torch.float, device="cuda").requires_grad_(True)),
+    #            nn.Parameter(torch.tensor(scales, dtype=torch.float, device="cuda").requires_grad_(True)),
+    #            nn.Parameter(torch.tensor(rots, dtype=torch.float, device="cuda").requires_grad_(True))
+    #            ]
+    results = [nn.Parameter(torch.tensor(xyz, dtype=torch.float, device="mps").requires_grad_(True)), 
+               nn.Parameter(torch.tensor(features_dc, dtype=torch.float, device="mps").transpose(1, 2).contiguous().requires_grad_(True)),
+               nn.Parameter(torch.tensor(features_extra, dtype=torch.float, device="mps").transpose(1, 2).contiguous().requires_grad_(True)),
+               nn.Parameter(torch.tensor(opacities, dtype=torch.float, device="mps").requires_grad_(True)),
+               nn.Parameter(torch.tensor(scales, dtype=torch.float, device="mps").requires_grad_(True)),
+               nn.Parameter(torch.tensor(rots, dtype=torch.float, device="mps").requires_grad_(True))
                ]
     return results
 

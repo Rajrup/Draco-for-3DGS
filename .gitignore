@@ -2,6 +2,7 @@ docs/_site
 myData
 myData/
 build_dir
+build_C
 guassianData
 myresult
 mytest

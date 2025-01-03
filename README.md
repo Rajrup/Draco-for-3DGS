@@ -8,7 +8,7 @@ However, this project is only focused on encode and decode 3DGS, so compressing 
 
 ## Build (C++ execution)
 
-### Build in Linux (Ubuntu)
+### Build (Ubuntu and MACOS)
 ```bash
 mkdir build_dir && cd build_dir
 cmake ../
