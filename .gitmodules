@@ -10,3 +10,6 @@
 [submodule "third_party/filesystem"]
   path = third_party/filesystem
   url = https://github.com/gulrak/filesystem
+[submodule "submodules/3DGS-Interface"]
+	path = submodules/3DGS-Interface
+	url = https://github.com/SYJINTW/3DGS-Interface.git
