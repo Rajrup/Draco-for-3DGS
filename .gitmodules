@@ -12,4 +12,4 @@
   url = https://github.com/gulrak/filesystem
 [submodule "submodules/3DGS-Interface"]
 	path = submodules/3DGS-Interface
-	url = https://github.com/SYJINTW/3DGS-Interface.git
+	url = https://github.com/Rajrup/3DGS-Interface.git
